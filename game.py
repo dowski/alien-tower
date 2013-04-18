@@ -11,9 +11,20 @@ background = pygame.Surface(screen.get_size())
 background = background.convert()
 background.fill((240, 240, 240))
 
+base = background.copy()
+
+tower = pygame.Surface((20, 200))
+tower = tower.convert()
+tower.fill((255, 0, 0))
+towerpos = tower.get_rect()
+towerpos.centerx = base.get_rect().centerx
+
+background.blit(tower, towerpos)
+base.blit(tower, towerpos)
+
 class Player(object):
     MAX_JUMP = 40
-    def __init__(self, pos_x, pos_y):
+    def __init__(self, pos_x, pos_y, base):
         self.viz = pygame.Surface((20, 20))
         self.viz = self.viz.convert()
         self.viz.fill((0,0,0))
@@ -21,15 +32,14 @@ class Player(object):
         self.pos.x = pos_x
         self.pos.y = pos_y
         self.prev = self.pos.copy()
-        self.blank = self.viz.copy()
-        self.blank.fill((240, 240, 240))
+        self.blank = base
         self.moving = 0
         self.jump_at = 0
         self.jump_direction = 0
         self.jumping = False
 
     def draw_on(self, surface):
-        surface.blit(self.blank, self.prev)
+        surface.blit(self.blank, self.blank.get_rect())
         surface.blit(self.viz, self.pos)
 
     def move_left_on(self, surface):
@@ -63,7 +73,7 @@ class Player(object):
             self.jumping = True
             self.jump_direction = 1
 
-player = Player(140, 180)
+player = Player(140, 180, base)
 
 player.draw_on(background)
 
@@ -88,7 +98,6 @@ while True:
             elif event.key == pygame.locals.K_UP:
                 player.jump()
         elif event.type == pygame.locals.KEYUP:
-            print "keyup"
             player.moving = 0
 
     if player.moving == LEFT:
